@@ -1,0 +1,22 @@
+<apex:page standardController="Contact" tabStyle="Contact" showHeader="false" sidebar="false">
+    <style type = "text/CSS" >
+    	h1{
+        	text-align : center;
+        	
+        	background : blue;
+        	
+        	height : 40px;
+        	width : 100%;
+        	color : #FFFFFF;
+        	font-size : 20px
+        	align : center;
+          }
+    </style>
+    
+	
+    <apex:pageBlock >
+    	<h1> TGT Teacher</h1>
+    </apex:pageBlock>
+
+
+</apex:page>

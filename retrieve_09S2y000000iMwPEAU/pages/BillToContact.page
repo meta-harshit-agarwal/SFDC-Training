@@ -1,0 +1,27 @@
+<apex:page controller="OpportunityController" docType="html-5.0">
+    <apex:form >
+    <apex:pageBlock >
+    	<apex:pageBlockTable value="{!contactList}" var="con">
+        	<apex:column value="{!con.Name}" />
+            <apex:column >
+                <input type = "radio" title = "SAVE"/>SAVE
+                <apex:actionSupport event="onclick" action="{! Save}" >
+                    <apex:param assignTo="{!contactId}" name="AccountId" value="{!con.Id}" />
+                </apex:actionSupport>
+            </apex:column>
+            <apex:column >
+                <input type = "radio" title = "Clear"/>Clear
+                <apex:actionSupport event="onclick" action="{! Clear}" >
+                    <apex:param assignTo="{!contactId}" name="AccountId" value="{!con.Id}" />
+                </apex:actionSupport>
+            </apex:column>
+            <apex:column >
+                <input type = "radio" title = "Cancel"/>Cancel
+                <apex:actionSupport event="onclick" action="{! Cancel}" >
+                    <apex:param assignTo="{!contactId}" name="AccountId" value="{!con.Id}" />
+                </apex:actionSupport>
+            </apex:column>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>
