@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>VF Page Workshop Assignment</fullName>
+    <types>
+        <members>shoppingCartController</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>ShoppingCart</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>Product2.Price_Per_Unit__c</members>
+        <members>Product2.Quantity_Available__c</members>
+        <members>Product2.Quantity__c</members>
+        <members>Product2.Select_Checkbox__c</members>
+        <members>Product2.Total__c</members>
+        <members>Purchase_Order__c.Order_Price__c</members>
+        <members>Purchase_Order__c.Order_Status__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>Purchase_Order__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>Purchase_Order__c-Purchase Order Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>Purchase_Order__c.All</members>
+        <name>ListView</name>
+    </types>
+    <version>49.0</version>
+</Package>
