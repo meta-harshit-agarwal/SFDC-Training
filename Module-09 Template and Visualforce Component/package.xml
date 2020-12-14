@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Template and VF Component</fullName>
+    <types>
+        <members>QueryComponentController</members>
+        <members>QueryExecuterController</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>QueryComponent</members>
+        <name>ApexComponent</name>
+    </types>
+    <types>
+        <members>QueryExecuter</members>
+        <name>ApexPage</name>
+    </types>
+    <version>49.0</version>
+</Package>

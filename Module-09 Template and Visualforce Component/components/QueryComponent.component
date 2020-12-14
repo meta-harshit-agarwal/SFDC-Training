@@ -1,0 +1,31 @@
+<apex:component controller="QueryComponentController">
+    <apex:attribute name="query" type="String" description="Query to be executed" assignTo="{! queryToBeExecuted}"/>
+    <apex:outputPanel id="recordBlock">
+    	<apex:form >
+            <apex:pageBlock title="Query Results">
+               
+                <apex:pageBlockTable value="{! RecordsList}" var="rec">
+                    <!-- set the table columns dynamically according to the number of fields in query -->
+                    <apex:repeat value="{! fieldsList}" var="field">
+                        <apex:column value="{! rec[field]}">
+                            <apex:facet name="header">
+                                <apex:commandLink action="{! sortByMethod}" reRender="recordBlock"> {! field}
+                                    <apex:param assignTo="{! sortBy}" name="sortBy" value="{! field}"/>                                 
+                                </apex:commandLink>
+                            </apex:facet>                     
+                        </apex:column>
+                    </apex:repeat>               
+                </apex:pageBlockTable>
+                
+                <apex:panelGrid columns="5">
+                    <apex:commandButton value="First" action="{!setCon.first}" disabled="{!NOT(setCon.HasPrevious)}" reRender="resultPanel"/>
+                    <apex:commandButton value="Previous" action="{!setCon.previous}" disabled="{!NOT(setCon.HasPrevious)}" reRender="resultPanel"/>
+                    <apex:commandButton value="Next" action="{!setCon.Next}" disabled="{!NOT(setCon.HasNext)}" reRender="resultPanel"/>
+                    <apex:commandButton value="Last" action="{!setCon.last}" disabled="{!NOT(setCon.HasNext)}" reRender="resultPanel"/>
+                    <apex:outputText value="Page : {!setCon.pageNumber} of {!CEILING(setCon.ResultSize/setCon.PageSize)}"/>
+                </apex:panelGrid>
+                
+            </apex:pageBlock>
+        </apex:form>
+    </apex:outputPanel>
+</apex:component>
