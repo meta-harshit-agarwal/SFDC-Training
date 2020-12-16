@@ -1,0 +1,44 @@
+<apex:page standardController="Class__c" >
+    <script src="/soap/ajax/45.0/connection.js"></script>
+    <script type = "text/javascript" >
+    	function addStudent()
+    	{
+        	sforce.connection.sessionId = '{! $Api.session_Id}';
+        	var student = new sforce.SObject("Student__c");
+            student.Name = document.getElementById('{! $Component.form.pageBlock.pageBlockSection.inputText}').value;
+            student.Class__c = document.getElementById('{! $Component.form.inputHidden}').value;
+        	var d = new Date();
+			d.setFullYear(2020, 11, 3)
+        	student.DOB__c = d;
+        	student.First_Name__c = 'xy';
+        	student.LastName__c = 'vxyz';
+            var result = sforce.connection.create([student], {onSuccess : success , onFailure : failed});
+        
+        	function success(result)
+            {
+            	if(result[0].getBoolean("success"))
+                    alert("Student Created with id = " + result[0].id);
+                else
+                    alert("Student not created");
+            }
+        
+        	function failed(error)
+            {
+                alert("Error : " + error);
+            }
+        }
+
+    </script>
+    <apex:form id="form">
+        <apex:inputHidden value="{!Class__c.Id}" id="inputHidden" />
+    	<apex:pageBlock id="pageBlock" >
+    		<apex:pageBlockSection id="pageBlockSection" >
+            	<apex:inputText id="inputText"/>
+            	<apex:commandButton value="Add">
+                    <apex:actionSupport event="onclick" onsubmit="addStudent();" />
+                </apex:commandButton>
+       	 	</apex:pageBlockSection>
+    	</apex:pageBlock>
+	</apex:form>
+    
+</apex:page>
