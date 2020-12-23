@@ -1,18 +1,18 @@
 <apex:page controller="shoppingCartController">
     <apex:form >
-        <apex:pageBlock title="Purchase order history" id="place_order_list">
+        <apex:pageBlock title="Purchase Orders History" id="place_order_list">
             
-            <apex:pageBlockTable value="{!PurchaseOrderHistory}" var="po">
-                <apex:column value="{! po.Id }"/>
-                <apex:column value="{! po.Order_Price__c }"/>
-                <apex:column value="{! po.Order_Status__c }"/>
+            <apex:pageBlockTable value="{!purchaseOrderHistories}" var="PO">
+                <apex:column value="{! PO.Id }"/>
+                <apex:column value="{! PO.Order_Price__c }"/>
+                <apex:column value="{! PO.Order_Status__c }"/>
             </apex:pageBlockTable>
             
-             <apex:pageblockButtons location="bottom">
-                <apex:commandButton value="First Page" rerender="place_order_list" action="{!FirstPage2}" disabled="{!prev2}"/>
-                <apex:commandButton value="Previous" rerender="place_order_list" action="{!previous2}" disabled="{!prev2}"/>
-                <apex:commandButton value="Next" rerender="place_order_list" action="{!next2}" disabled="{!next2}"/>
-                <apex:commandButton value="Last Page" rerender="place_order_list" action="{!LastPage2}" disabled="{!next2}"/>
+            <apex:pageblockButtons location="bottom">
+                <apex:commandButton value="First" rerender="place_order_List" action="{!firstPurchaseOrderPage}" disabled="{!previousPurchaseOrderPage}"/>
+                <apex:commandButton value="Previous" rerender="place_order_List" action="{!previousPurchaseOrderPage}" disabled="{!previousPurchaseOrderPage}"/>
+                <apex:commandButton value="Next" rerender="place_order_List" action="{!nextPurchaseOrderPage}" disabled="{!nextPurchaseOrderPage}"/>
+                <apex:commandButton value="Last" rerender="place_order_List" action="{!lastPurchaseOrderPage}" disabled="{!nextPurchaseOrderPage}"/>
             </apex:pageblockButtons>
             
         </apex:pageBlock>
@@ -20,28 +20,28 @@
         <table style="width: 100%">
                 <tr>
                     <td align="center"> 
-                        <apex:commandButton value="show Product list" action="{!showproductlist}" onclick="setTimeout(callAction2, 1000);"/>
+                        <apex:commandButton value="Add New Purchase" action="{!showProductList}" onclick="setTimeout(addNewPurchaseAction, 1000);"/>
                     </td>
                 </tr>
         </table> 
             
-        <apex:actionFunction reRender="products_list" name="jsTesting2" />
+        <apex:actionFunction reRender="productsList" name="productList" />
         
-        <apex:pageBlock title="List of Products" id="products_list" rendered="{!hideShowProductList}">
+        <apex:pageBlock title="List of Products" id="productsList" rendered="{!hideshowProductList}">
             <table style="width: 100%">
                 <tr>
                     <td>
                         Search Products:
-                        <apex:inputText value="{!searchKey}"  onchange="test();" label="Input" />
-                        <apex:actionFunction name="CallApexMethod" action="{!search}" reRender="products_list"/>
+                        <apex:inputText value="{!searchKey}"  onchange="search();" label="Input" />
+                        <apex:actionFunction name="getSearchedProduct" action="{!search}" reRender="productsList"/>
                     </td>
                     <td align="right"> 
-                        <apex:commandButton value="Add To Cart" action="{!submit}" onclick="setTimeout(callAction, 3000);"/>
+                        <apex:commandButton value="Add To Cart" action="{!submit}" onclick="setTimeout(addToCartAction, 3000);"/>
                     </td>
                 </tr>
             </table>
             
-            <apex:pageBlockTable value="{!shoppingProduct}" var="pr">  
+            <apex:pageBlockTable value="{!products}" var="pr">  
                 
                 <apex:column headerValue="Select Products">
                     <apex:inputCheckbox value="{!pr.Select_Checkbox__c}"/>
@@ -50,7 +50,7 @@
                 <apex:column value="{! pr.Name }">
                     <apex:facet name="header">
                         <apex:outputPanel >
-                            <apex:commandLink value="Products Name" action="{!sortAccNamecolumn}" reRender="products_list"/>
+                            <apex:commandLink value="Products Name" action="{!sortAccountColumn}" reRender="productsList"/>
                         </apex:outputPanel>
                     </apex:facet>
                 </apex:column>
@@ -63,54 +63,54 @@
             </apex:pageBlockTable>
             
             <apex:pageblockButtons location="bottom">
-                <apex:commandButton value="First Page" rerender="products_list" action="{!FirstPage1}" disabled="{!prev1}"/>
-                <apex:commandButton value="Previous" rerender="products_list" action="{!previous1}" disabled="{!prev1}"/>
-                <apex:commandButton value="Next" rerender="products_list" action="{!next1}" disabled="{!next1}"/>
-                <apex:commandButton value="Last Page" rerender="products_list" action="{!LastPage1}" disabled="{!next1}"/>
+                <apex:commandButton value="First" rerender="productsList" action="{!firstProductPage}" disabled="{!previousProductPage}"/>
+                <apex:commandButton value="Previous" rerender="productsList" action="{!previousProductPage}" disabled="{!previousProductPage}"/>
+                <apex:commandButton value="Next" rerender="productsList" action="{!nextProductPage}" disabled="{!nextProductPage}"/>
+                <apex:commandButton value="Last" rerender="productsList" action="{!lastProductPage}" disabled="{!nextProductPage}"/>
             </apex:pageblockButtons>
             
         </apex:pageBlock>
             
         <apex:pageMessages id="showmsg" rendered="{! error }"></apex:pageMessages>
-        <apex:actionFunction reRender="cart_list" name="jsTesting" />
+        <apex:actionFunction reRender="cart_List" name="cartList" />
         
-        <apex:actionFunction name="changeAvailableQuantity1" action="{!changeAvailableQuantity}" reRender="products_list, showmsg">
-        	<apex:param name="idOfItemQuant" value="" assignTo="{!idOfItemQuant}"/> 
+        <apex:actionFunction name="changeAvailabeQuantity1" action="{!changeAvailabeQuantity}" reRender="productsList, showmsg">
+        	<apex:param name="orderItemIdForQuantity" value="" assignTo="{!orderItemIdForQuantity}"/> 
         </apex:actionFunction>
         
-        <apex:pageBlock title="Cart Items" id="cart_list" rendered="{!hideShowCartList}">
+        <apex:pageBlock title="Cart Items" id="cart_List" rendered="{!hideShowCartList}">
           
-            <apex:pageBlockTable value="{!orderitems}" var="oi">
+            <apex:pageBlockTable value="{! orderItems}" var="oi">
                 <apex:column value="{! oi.name }"/>
                 <apex:column value="{! oi.ProductCode }"/>
                 <apex:column value="{! oi.Price_Per_Unit__c }"/>
                 <apex:column headerValue="Quantity">
-                    <apex:inputText value="{!oi.Quantity__c }" onblur="changeAvailableQuantity('{!oi.id}');"/>
+                    <apex:inputText value="{!oi.Quantity__c }" onblur="changeAvailabeQuantity('{!oi.id}');"/>
                 </apex:column>
                 <apex:column >
-                    <apex:commandButton value="Remove" action="{!removeOrderItem}" reRender="cart_list,products_list">
-                        <apex:param name="idOfItem" value="{! oi.id}" assignTo="{!idOfItem}" /> 
+                    <apex:commandButton value="Remove" action="{!removeOrderItem}" reRender="cart_List,productsList">
+                        <apex:param name="orderItemId" value="{! oi.id}" assignTo="{!orderItemId}" /> 
                     </apex:commandButton>
                 </apex:column>
-                
             </apex:pageBlockTable>
-                          <apex:commandLink action="{!prev3}" value="prev " rendered="{!hasPrev2}" />
-            <apex:commandLink action="{!next3}"  value="next " rendered="{!hasNext2}" />
+
+            <apex:commandLink action="{!previousCartItem}" value="prev " rendered="{!hasPreviousCartItem}" />
+            <apex:commandLink action="{!nextCartItem}"  value="next " rendered="{!hasNextCartItem}" />
           
             <table style="width: 100%">
                 <tr>
                     <td align="center"> 
-                        <apex:commandButton value="Chekout" action="{!checkout}" onclick="setTimeout(callAction1, 3000);"/>
+                        <apex:commandButton value="Chekout" action="{!checkout}" onclick="setTimeout(checkoutAction, 3000);"/>
                     </td>
                 </tr>
             </table> 
             
         </apex:pageBlock>
       
-        <apex:actionFunction reRender="checkout_list" name="jsTesting1" />
-        <apex:pageBlock title="checkout Items" id="checkout_list" rendered="{!hideShowCheckoutList}">
+        <apex:actionFunction reRender="checkout_List" name="checkoutList" />
+        <apex:pageBlock title="checkout Items" id="checkout_List" rendered="{!hideShowCheckoutList}">
             
-            <apex:pageBlockTable value="{!checkoutitems}" var="coi">
+            <apex:pageBlockTable value="{!checkoutItems}" var="coi">
                 <apex:column value="{! coi.name }"/>
                 <apex:column value="{! coi.ProductCode }"/>
                 <apex:column value="{! coi.Price_Per_Unit__c }"/>
@@ -118,48 +118,50 @@
                 <apex:column value="{! coi.total__c }"/>
             </apex:pageBlockTable>
             
-            <apex:commandLink action="{!prev4}" value="prev " rendered="{!hasPrev2}" />
-            <apex:commandLink action="{!next4}"  value="next " rendered="{!hasNext2}" />
+            <apex:commandLink action="{!previousCheckoutItem}" value="prev " rendered="{!hasPreviousCheckoutItem}" />
+            <apex:commandLink action="{!nextCheckoutItem}"  value="next " rendered="{!hasNextCheckoutItem}" />
           
             <table style="width: 100%">
                 <tr>
                     <td align="right"> 
-                        total : ${!totalMoney} 
+                        total : ${!totalPrice} 
                     </td>
                 </tr> 
                 <tr>
                     <td align="center"> 
-                        <apex:commandButton value="Place Order" action="{!PlaceOrder}" reRender="place_order_list"/>
+                        <apex:commandButton value="Place Order" action="{!placeOrder}" reRender="place_order_List"/>
                     </td>
                 </tr>
             </table> 
         </apex:pageBlock>  
-        
     </apex:form>
+
     <script language="JavaScript"> 
-    	function callAction()
+
+    	function addToCartAction()
         {
-            jsTesting();
+            cartList();
         }
     
-        function callAction1()
+        function checkoutAction()
         {
-            jsTesting1();
+            checkoutList();
         }
     
-        function callAction2()
+        function addNewPurchaseAction()
         {
-            jsTesting2();
+            productList();
         }
         
-        function test()
+        function search()
     	{
-            CallApexMethod();
+            getSearchedProduct();
         }
     
-        function changeAvailableQuantity(iid)
+        function changeAvailabeQuantity(iid)
     	{
-            changeAvailableQuantity1(iid);
+            changeAvailabeQuantity1(iid);
         }
-        </script>
+
+    </script>
 </apex:page>

@@ -1,141 +1,82 @@
 public class shoppingCartController 
 {
-    public boolean error {get;set;}
+    public Boolean error {get;set;}
     public String sortDirection {get;set;}
-    private Integer totalRecs1 = 0;
-    private Integer OffSetSize1 = 0;
-    private Integer LimitSize1 = 10;
-    // dsbjdbscscscbsdjchsdcjscs
-    // csncsdcscjs
-    private Integer totalRecs2 = 0;
-    private Integer OffSetSize2 = 0;
-    private Integer LimitSize2 = 10;
-    public String idOfItem {get;set;}
-    public String idOfItemQuant {get;set;}
+    private Integer productCount = 0;
+    private Integer productQueryOffSet = 0;
+    private Integer productQueryLimit = 10;
+    private Integer purchaseOrderCount = 0;
+    private Integer purchaseOrderQueryOffSet = 0;
+    private Integer purchaseOrderQueryLimit = 10;
+    public Id orderItemId {get;set;}
+    public Id orderItemIdForQuantity {get;set;}
     public List<Id> productIds = new List<Id>();
-    public List<Product2> shoppingProduct {get;set;}
+    public List<Product2> products {get;set;}
     public String searchKey {get;set;}
-    // Commited from VS Code
-    public List<Product2> orderItems 
+    public List<Purchase_Order__c> purchaseOrderHistories{get; set;}
+    public Boolean hideShowCartList {get;set;}
+    public Boolean hideShowCheckoutList {get;set;}
+    public Boolean hideShowProductList {get;set;}
+    public Decimal totalPrice {get;set;}
+    public Product2 productIteratorForQuantity;
+    public List<Product2> orderItems{get;set;}
+    public List<Product2> checkoutItems{get;set;}
+
+    public ApexPages.StandardSetController orderStandardSetController
     {
-        get
-        {
-            if(ossc != null)
-            	return ossc.getRecords();
-            else return null;
-        } set;
+        get {
+            if(orderStandardSetController == null) 
+            {                
+                orderStandardSetController = new ApexPages.StandardSetController(ProductSelector.getProductByIdList(productIds)); 
+                orderStandardSetController.setPageSize(2);
+                orderItems = orderStandardSetController.getRecords();
+            }            
+            return orderStandardSetController;
+        }
+        set;
     }
     
-    public List<Product2> checkoutItems 
+    public ApexPages.StandardSetController checkoutStandardSetController
     {
-        get
-        {
-            if(cssc != null)
-                return cssc.getRecords();
-            else return null;
-        } set;
+        get {
+            if(checkoutStandardSetController == null) 
+            {                
+                checkoutStandardSetController = new ApexPages.StandardSetController(ProductSelector.getProductByIdList(productIds)); 
+                checkoutStandardSetController.setPageSize(5);
+                checkoutItems = checkoutStandardSetController.getRecords();
+            }            
+            return checkoutStandardSetController;
+        }
+        set;
     }
     
-    public List<Purchase_Order__c> purchaseOrderHistory{get; set;}
-    public boolean hideShowCartList {get;set;}
-    public boolean hideShowCheckoutList {get;set;}
-    public boolean hideShowProductList {get;set;}
-    public decimal totalMoney {get;set;}
-    public product2 valueOfQuant;
-    
-    public ApexPages.StandardSetController ossc{set;get;}
-    
-    public Boolean hasNext1
-    {
-        get 
-        {
-            if(ossc != NULL)
-                return ossc.getHasNext();
-            return false;
-        } set;
-    }
-    
-    public Boolean hasPrev1
-    {
-        get
-        {
-            if(ossc != NULL) 
-                return ossc.getHasPrevious();
-            return false;
-        } set;
-    }
-    
-    public ApexPages.StandardSetController cssc{set;get;}
-    public Boolean hasNext2
-    {
-        get
-        {
-            if(cssc != NULL)
-                return cssc.getHasNext();
-            return false;
-        } set;
-    }
-    
-    public Boolean hasPrev2
-    {
-        get
-        {
-            if(cssc != NULL) 
-                return cssc.getHasPrevious();
-            return false;
-        } set;
-    }
-    
-    public boolean getHideShowCartList(boolean input)
-    {
-        hideShowCartList = input;
-        
-        return hideShowCartList;
-    }
-    
-    public boolean getHideShowCheckoutList(boolean input)
-    {
-        hideShowCheckoutList = input;
-        
-        return hideShowCheckoutList;
-    }
-    
-    public boolean getHideShowProductList(boolean input)
-    {
-        hideShowProductList = input;
-        
-        return hideShowProductList;
-    }
+    private final static String SORT_DIRECTION_ASC = 'ASC';
+    private final static String SORT_DIRECTION_DESC = 'DESC';
     
     public shoppingCartController()
     {
-        totalMoney = 0.0;
+        totalPrice = 0.0;
         error = false;
-        sortDirection = 'asc';
-        List<Product2> orderItems = new List<Product2>();
-        PurchaseOrderHistory = [SELECT Id, Order_Price__c, Order_Status__c FROM Purchase_Order__c LIMIT 5];
-        totalRecs1 = [SELECT count() FROM product2];
-        totalRecs2 = [SELECT count() FROM Purchase_Order__c];
-        string searchQuery = 'SELECT Select_Checkbox__c, Name, Id, ProductCode, Description, Price_Per_Unit__c, Quantity_Available__c FROM product2 Order By Name ' + sortDirection + ' LIMIT : LimitSize1 OFFSET : OffsetSize1';
-        shoppingProduct = Database.query(searchQuery);
+        sortDirection = SORT_DIRECTION_ASC;
+        purchaseOrderHistories = PurchaseOrderSelector.getPurchaseOrdersWithLimit(5);
+        productCount = ProductSelector.getProductCount();
+        purchaseOrderCount = PurchaseOrderSelector.getPurchaseOrderCount();
+        products = ProductSelector.getProductsByOffset(sortDirection, productQueryLimit, productQueryOffSet);
     }
     
-    public List<Product2> getOrderItems(List<Id> productsid)
+    public List<Product2> getOrderItems(List<Id> productids)
     {
-        string searchQuery = 'SELECT Name, Id, ProductCode, Quantity__c, Description, Price_Per_Unit__c, Quantity_Available__c FROM product2 WHERE Id IN : productIds';
-        ossc = new ApexPages.StandardSetController(Database.getQueryLocator(searchQuery)); 
-        ossc.setPageSize(5);
-        orderItems = Database.query(searchQuery);
+        orderItems = ProductSelector.getProductByIdList(productIds);
         
-        for(Product2 query : orderItems)
+        for(Product2 orderedProduct : orderItems)
         {
-            for(product2 sProduct : shoppingProduct)
+            for(Product2 selectedProduct : products)
             {
-                product2 valueOfQuant = [SELECT Quantity_Available__c FROM product2 WHERE Id =: sProduct.Id][0];
+                Product2 productIteratorForQuantity = ProductSelector.getProductById(selectedProduct.Id)[0];
                 
-                if(query.id == sProduct.id)
+                if(orderedProduct.id == selectedProduct.id)
                 {
-                    query.Quantity__c = valueofquant.Quantity_Available__c - sProduct.Quantity_Available__c;
+                    orderedProduct.Quantity__c = productIteratorForQuantity.Quantity_Available__c - selectedProduct.Quantity_Available__c;
                 }
             }
         }
@@ -145,22 +86,19 @@ public class shoppingCartController
     
     public List<Product2> getCheckoutItems(List<Id> productIds)
     {
-        string searchQuery = 'SELECT Name, Id, ProductCode, Description, Price_Per_Unit__c, Quantity__c, Total__c FROM product2 WHERE Id IN : productIds';
-        cssc = new ApexPages.StandardSetController(Database.getQueryLocator(searchQuery)); 
-        cssc.setPageSize(5);
-        orderItems = Database.query(searchQuery);
-        checkoutItems = Database.query(searchQuery);
+        orderItems = ProductSelector.getProductByIdList(productIds);
+        checkoutItems = ProductSelector.getProductByIdList(productIds);
         
-        for(product2 cProduct : checkoutItems)
+        for(Product2 checkoutProduct : checkoutItems)
         {
-            for(product2 sProduct : shoppingProduct)
+            for(Product2 selectedProduct : products)
             {
-                product2 valueOfQuant = [SELECT Quantity_Available__c FROM product2 WHERE Id =: sProduct.id][0];
+                Product2 productIteratorForQuantity = ProductSelector.getProductById(selectedProduct.Id)[0];
                 
-                if(cProduct.id == sProduct.id)
+                if(checkoutProduct.id == selectedProduct.id)
                 {
-                    cProduct.Quantity__c = valueofquant.Quantity_Available__c - sProduct.Quantity_Available__c;
-                    cProduct.Total__c = cProduct.Quantity__c * cProduct.Price_Per_Unit__c;
+                    checkoutProduct.Quantity__c = productIteratorForQuantity.Quantity_Available__c - selectedProduct.Quantity_Available__c;
+                    checkoutProduct.Total__c = checkoutProduct.Quantity__c * checkoutProduct.Price_Per_Unit__c;
                 }
             }
         }
@@ -170,19 +108,19 @@ public class shoppingCartController
     
     public void search()
     {
-        string searchQuery = 'SELECT Select_Checkbox__c, Name, Id, ProductCode, Description, Price_Per_Unit__c, Quantity_Available__c FROM product2 WHERE Name LIKE \'%' + searchKey + '%\'';
-        shoppingProduct = Database.query(searchQuery);
+        products = ProductSelector.getProductsByKey(searchKey);
     }
     
     public void submit()
     {
-        getHideShowCartList(true);
-        for(product2 sProduct : shoppingProduct)
+        hideShowCartList = true;
+        hideShowProductList = false;
+        for(Product2 selectedProduct : products)
         {
-            if(sProduct.Select_Checkbox__c == true && sProduct.Quantity_Available__c >= 1)
+            if(selectedProduct.Select_Checkbox__c == true && selectedProduct.Quantity_Available__c >= 1)
             {
-                sProduct.Quantity_Available__c = sProduct.Quantity_Available__c - 1;
-                productids.add(sProduct.id);
+                selectedProduct.Quantity_Available__c = selectedProduct.Quantity_Available__c - 1;
+                productids.add(selectedProduct.id);
             }
         }
         getOrderItems(productIds);
@@ -190,40 +128,43 @@ public class shoppingCartController
     
     public void checkout()
     {
-        totalMoney = 0.0;
-        getHideShowCheckoutList(true);
+        totalPrice = 0.0;
+        hideShowCartList = false;
+        hideShowProductList = false;
+        hideShowCheckoutList = true;
         
-        for(product2 oProduct : orderitems)
+        for(Product2 orderedProduct : orderItems)
         {
-            productids.add(oProduct.id);
+            productIds.add(orderedProduct.id);
         }
         
         getCheckoutItems(productIds);
         
-        for(product2 checkBalance : checkoutitems)
+        for(Product2 checkoutProduct : checkoutitems)
         {
-            totalmoney = totalmoney + (checkBalance.Quantity__c * checkBalance.Price_Per_Unit__c);
+            totalPrice = totalPrice + (checkoutProduct.Quantity__c * checkoutProduct.Price_Per_Unit__c);
         }
     }
     
     public void placeOrder()
     {
-        Purchaseorderhistory.add(new Purchase_Order__c(Name = 'purchasing',Order_Price__c = totalmoney, Order_Status__c = 'pending'));
-        upsert Purchaseorderhistory;
+        purchaseOrderHistories.add(new Purchase_Order__c(Name = 'purchasing',Order_Price__c = totalPrice, Order_Status__c = 'pending'));
+        upsert purchaseOrderHistories;
+        hideShowCheckoutList = false;
     }
     
     public void removeOrderItem()
     {
-        for(Integer i = productids.size() - 1; i >= 0; i--)
+        for(Integer i = productIds.size() - 1; i >= 0; i--)
         {
-            if(productids[i].equals(idOfItem))
+            if(productIds[i].equals(orderItemId))
             {
-                for(product2 query1 : shoppingProduct)
+                for(Product2 productToRemove : products)
                 {
-                    if(productids[i].equals(query1.id))
+                    if(productIds[i].equals(productToRemove.id))
                     {
-                        product2 valueofquant = [SELECT Quantity_Available__c FROM product2 WHERE id =: query1.id][0];
-                        query1.Quantity_Available__c = valueofquant.Quantity_Available__c;
+                        Product2 productIteratorForQuantity = ProductSelector.getProductById(productToRemove.Id)[0];
+                        productToRemove.Quantity_Available__c = productIteratorForQuantity.Quantity_Available__c;
                     }
                 }
                 productIds.remove(i);
@@ -232,20 +173,21 @@ public class shoppingCartController
         getorderitems(productIds);
     }
     
-    public void changeAvailableQuantity()
+    public void changeAvailabeQuantity()
     {
-        for(product2 sProduct : shoppingProduct)
+        for(Product2 selectedProduct : products)
         {
-            product2 valueofquant = [SELECT Quantity_Available__c FROM product2 WHERE Id =: sProduct.Id][0];
-            for(product2 oProduct: orderitems)
+            Product2 productIteratorForQuantity = ProductSelector.getProductById(selectedProduct.Id)[0];
+
+            for(Product2 orderedProduct: orderitems)
             {
                 
-                if(sProduct.id == idOfItemQuant && oProduct.id == idOfItemQuant)
+                if(selectedProduct.id == orderItemIdForQuantity && orderedProduct.id == orderItemIdForQuantity)
                 {
-                    if(valueofquant.Quantity_Available__c >= oProduct.Quantity__c && oProduct.Quantity__c != 0)
+                    if(productIteratorForQuantity.Quantity_Available__c >= orderedProduct.Quantity__c && orderedProduct.Quantity__c != 0)
                     {
                         error = false;
-                        sProduct.Quantity_Available__c = valueofquant.Quantity_Available__c - oProduct.Quantity__c;
+                        selectedProduct.Quantity_Available__c = productIteratorForQuantity.Quantity_Available__c - orderedProduct.Quantity__c;
                     }
                     
                     else
@@ -261,140 +203,148 @@ public class shoppingCartController
         }
     }
     
-    public void showproductlist()
+    public void showProductList()
     {
-        gethideShowProductList(true);
+        hideShowProductList = true;
+        
     }
-    
-    public pageReference sortAccNamecolumn()
+
+    public pageReference sortAccountColumn()
     {
-        if(sortDirection == 'asc')
+        if(sortDirection == SORT_DIRECTION_ASC)
         {
-            sortDirection = 'desc';
+            sortDirection = SORT_DIRECTION_DESC;
         }
         
-        else if(sortDirection == 'desc')
+        else if(sortDirection == SORT_DIRECTION_DESC)
         {
-            sortDirection = 'asc';
+            sortDirection = SORT_DIRECTION_ASC;
         }
         
-        string searchquery = 'SELECT Select_Checkbox__c, Name, Id, ProductCode, Description, Price_Per_Unit__c, Quantity_Available__c FROM product2 Order By Name ' + sortDirection + ' LIMIT : LimitSize1 OFFSET : OffsetSize1';
-        shoppingProduct = Database.query(searchquery);
+        products = ProductSelector.getProductsByOffset(sortDirection, productQueryOffSet, productQueryOffSet);
         
         return null;
     }
     
-    
-    public void FirstPage1()
+    public void firstProductPage()
     {
-        OffsetSize1 = 0;
-        string searchQuery = 'SELECT Select_Checkbox__c, Name, Id, ProductCode, Description, Price_Per_Unit__c, Quantity_Available__c FROM product2 Order By Name ' + sortDirection + ' LIMIT : LimitSize1 OFFSET : OffsetSize1';
-        shoppingProduct = Database.query(searchQuery);
+        productQueryOffSet = 0;
+        products = ProductSelector.getProductsByOffset(sortDirection, productQueryOffSet, productQueryOffSet);
     }
     
-    public void previous1()
+    public void previousProductPage()
     {
-        OffsetSize1 = OffsetSize1 - LimitSize1;
-        string searchQuery = 'SELECT Select_Checkbox__c, Name, Id, ProductCode, Description, Price_Per_Unit__c, Quantity_Available__c FROM product2 Order By Name ' + sortDirection + ' LIMIT : LimitSize1 OFFSET : OffsetSize1';
-        shoppingProduct = Database.query(searchQuery);
+        productQueryOffSet = productQueryOffSet - productQueryLimit;
+        products = ProductSelector.getProductsByOffset(sortDirection, productQueryOffSet, productQueryOffSet);
     }
     
-    public void next1()
+    public void nextProductPage()
     {
-        OffsetSize1 = OffsetSize1 + LimitSize1;
-        string searchQuery = 'SELECT Select_Checkbox__c, Name, Id, ProductCode, Description, Price_Per_Unit__c, Quantity_Available__c FROM product2 Order By Name ' + sortDirection + ' LIMIT : LimitSize1 OFFSET : OffsetSize1';
-        shoppingProduct = Database.query(searchQuery);
+        productQueryOffSet = productQueryOffSet + productQueryLimit;
+        products = ProductSelector.getProductsByOffset(sortDirection, productQueryOffSet, productQueryOffSet);
     }
     
-    public void LastPage1()
+    public void lastProductPage()
     {
-        OffSetSize1 = totalRecs1 - math.mod(totalRecs1, LimitSize1);
-        string searchQuery = 'SELECT Select_Checkbox__c, Name, Id, ProductCode, Description, Price_Per_Unit__c, Quantity_Available__c FROM product2 Order By Name ' + sortDirection + ' LIMIT : LimitSize1 OFFSET : OffsetSize1';
-        shoppingProduct = Database.query(searchQuery);
+        productQueryOffSet = productCount - math.mod(productCount, productQueryLimit);
+        products = ProductSelector.getProductsByOffset(sortDirection, productQueryOffSet, productQueryOffSet);
+        
     }
     
-    public boolean getprev1()
+    public Boolean getPreviousProductPage()
     {
-        if(OffSetSize1 == 0)
+        if(productQueryOffSet == 0)
             return true;
         else
             return false;
     }
     
-    public boolean getnext1()
+    public Boolean getNextProductPage()
     {
-        if((OffsetSize1 + LimitSize1) > totalRecs1)
+        if((productQueryOffSet + productQueryLimit) > productCount)
             return true;
         else
             return false;
     }
 
-    public void FirstPage2()
+    public void firstPurchaseOrderPage()
     {
-        OffsetSize2 = 0;
-        string searchQuery = 'SELECT Id, Order_Price__c, Order_Status__c FROM Purchase_Order__c LIMIT : LimitSize2 OFFSET : OffsetSize2';
-        Purchaseorderhistory = Database.query(searchQuery);
+        purchaseOrderQueryOffSet = 0;
+        purchaseOrderHistories = PurchaseOrderSelector.getPurchaseOrdersByOffset(purchaseOrderQueryLimit, purchaseOrderQueryOffSet);
     }
     
-    public void previous2()
+    public void previousPurchaseOrderPage()
     {
-        OffsetSize2 = OffsetSize2 - LimitSize2;
-        string searchQuery = 'SELECT, Id, Order_Price__c, Order_Status__c FROM Purchase_Order__c LIMIT : LimitSize2 OFFSET : OffsetSize2';
-        Purchaseorderhistory = Database.query(searchQuery);
+        purchaseOrderQueryOffSet = purchaseOrderQueryOffSet - purchaseOrderQueryLimit;
+        purchaseOrderHistories = PurchaseOrderSelector.getPurchaseOrdersByOffset(purchaseOrderQueryLimit, purchaseOrderQueryOffSet);
     }
     
-    public void next2()
+    public void nextPurchaseOrderPage()
     {
-        OffsetSize2 = OffsetSize2 + LimitSize2;
-        string searchQuery = 'SELECT, Id, Order_Price__c, Order_Status__c FROM Purchase_Order__c LIMIT : LimitSize2 OFFSET : OffsetSize2';
-        Purchaseorderhistory = Database.query(searchQuery);
+        purchaseOrderQueryOffSet = purchaseOrderQueryOffSet + purchaseOrderQueryLimit;
+        purchaseOrderHistories = PurchaseOrderSelector.getPurchaseOrdersByOffset(purchaseOrderQueryLimit, purchaseOrderQueryOffSet);
     }
     
-    public void LastPage2()
+    public void lastPurchaseOrderPage()
     {
-        OffsetSize2 = totalRecs2 - math.mod(totalRecs2, LimitSize2);
-        string searchQuery = 'SELECT, Id, Order_Price__c, Order_Status__c FROM Purchase_Order__c LIMIT : LimitSize2 OFFSET : OffsetSize2';
-        Purchaseorderhistory = Database.query(searchQuery);
+        purchaseOrderQueryOffSet = purchaseOrderCount - math.mod(purchaseOrderCount, purchaseOrderQueryLimit);
+        purchaseOrderHistories = PurchaseOrderSelector.getPurchaseOrdersByOffset(purchaseOrderQueryLimit, purchaseOrderQueryOffSet);
     }
     
-    public boolean getprev2()
+    public Boolean getPreviousPurchaseOrderPage()
     {
-        if(OffsetSize2 == 0)
+        if(purchaseOrderQueryOffSet == 0)
             return true;
         else
             return false;
     }
     
-    public boolean getnext2()
+    public Boolean getNextPurchaseOrderPage()
     {
-        if((OffsetSize2 + LimitSize2) > totalRecs2)
+        if((purchaseOrderQueryOffSet + purchaseOrderQueryLimit) > purchaseOrderCount)
             return true;
         else
             return false;
     }
     
-    public void next3()
+    public Boolean getHasNextCartItem()
     {
-        ossc.save();
-        ossc.next();
-    } 
-    
-    public void prev3()
-    {
-        ossc.save();
-        ossc.previous();
+        return orderStandardSetController.getHasNext();
     }
     
-    public void next4()
+    public Boolean getHasPreviousCartItem()
     {
-        cssc.save();
-        cssc.next();
+        return orderStandardSetController.getHasPrevious();
+    }
+    
+    public Boolean getHasNextCheckoutItem()
+    {
+        return checkoutStandardSetController.getHasNext();
+    }
+    
+    public Boolean getHasPreviousCheckoutItem()
+    {
+        return checkoutStandardSetController.getHasPrevious();
+    }
+    
+    public void nextCartItem()
+    {
+        orderStandardSetController.next();
     } 
     
-    public void prev4()
+    public void previousCartItem()
     {
-        cssc.save();
-        cssc.previous();
+        orderStandardSetController.previous();
+    }
+    
+    public void nextCheckoutItem()
+    {
+        checkoutStandardSetController.next();
+    } 
+    
+    public void previousCheckoutItem()
+    {
+        checkoutStandardSetController.previous();
     }
     
 }
