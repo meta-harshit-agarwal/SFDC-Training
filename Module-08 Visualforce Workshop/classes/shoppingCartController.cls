@@ -5,6 +5,8 @@ public class shoppingCartController
     private Integer totalRecs1 = 0;
     private Integer OffSetSize1 = 0;
     private Integer LimitSize1 = 10;
+    // dsbjdbscscscbsdjchsdcjscs
+    // csncsdcscjs
     private Integer totalRecs2 = 0;
     private Integer OffSetSize2 = 0;
     private Integer LimitSize2 = 10;
