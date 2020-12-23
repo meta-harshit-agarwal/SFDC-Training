@@ -15,7 +15,7 @@ public class shoppingCartController
     public List<Id> productIds = new List<Id>();
     public List<Product2> shoppingProduct {get;set;}
     public String searchKey {get;set;}
-    
+    // Commited from VS Code
     public List<Product2> orderItems 
     {
         get
