@@ -1,0 +1,86 @@
+<aura:component controller = "createContactController" >
+    <aura:attribute name = "isRecordAvailable" type = "Boolean" default = "false"/>
+    <aura:attribute name = "message" type = "String" />
+    <aura:attribute name = "contacts" type = "Contact[]" />
+    <aura:attribute name = "columns" type = "List"  />
+    <aura:attribute name = "contact" type = "Contact" 
+                    default="{'sObjectType':'Contact',
+                              'FirstName' : '',
+                              'LastName'  : '',
+                              'Email'     : '',
+                              'Phone'     : '',
+                              'Fax'       : ''    }" />
+    
+    <aura:handler name = "init" action ="{!c.doInit}" value = "{!this}" />
+    
+    <c:createContactHeading />
+    <lightning:layout>
+        <lightning:layoutItem padding="around-small" size="6">
+            <div aria-labelledby="newexpenseform">
+                <fieldset class="slds-box slds-theme_default slds-container_small">
+                    <legend id="newexpenseform" class="slds-text-heading_small
+                      slds-p-vertical_medium">
+                      Add Expense
+                    </legend>
+                    <form class="slds-form--stacked" >
+                    
+                        <lightning:input aura:id = "contactForm"
+                                         label = "First Name"
+                                         value = "{!v.contact.FirstName}" 
+                                         pattern = "[a-z A-Z \s]*"
+                                         placeholder = "Enter First Name Here" />
+                        
+                        <lightning:input aura:id = "contactForm"
+                                         label = "Last Name"
+                                         value = "{!v.contact.LastName}"
+                                         required = "true"  
+                                         pattern = "[a-z A-Z \s]*"
+                                         placeholder = "Enter Last Name Here" />
+                        
+                        <lightning:input aura:id = "contactForm"
+                                         label = "Email"
+                                         value = "{!v.contact.Email}" 
+                                         type="email"  
+                                         placeholder = "ex : typeYourEmail@domain.com "/>
+                        
+                        <lightning:input aura:id = "contactForm"
+                                         label = "Phone"
+                                         value = "{!v.contact.Phone}"
+                                         type = "decimal"
+                                         pattern = ".{10}"
+                                         placeholder = "Enter Phone Number Here"/>
+                        
+                        <lightning:input aura:id = "contactForm"
+                                         label = "Fax"
+                                         value = "{!v.contact.Fax}"
+                                         type ="number" 
+                                         placeholder = "Enter Fax Number Here"/>  
+                        
+                        <lightning:button label = "Create" 
+                                          class = "slds-m-top--medium"
+                                          onclick = "{!c.create}" />
+                        
+                    </form>
+                    </fieldset>    
+            </div>
+            </lightning:layoutItem>
+    </lightning:layout>
+    <br/><br/>
+    <div class ="msg" id ="msgId" >
+    	<h2>{!v.message} </h2>
+    </div>
+    
+    <aura:if isTrue="{!v.isRecordAvailable}">
+    <c:saveContactHeading />
+    <div style="height: 300px;">
+        <lightning:datatable
+                keyField="id"
+                data="{!v.contacts}"
+                columns="{!v.columns}"
+                hideCheckboxColumn="true"
+                           
+                             />
+    </div>
+	</aura:if>
+	
+</aura:component>
