@@ -1,0 +1,17 @@
+<apex:page controller="QueryExecuterController">
+    <apex:form >
+    	<apex:pageBlock title="Query Editor">
+            
+            <apex:pageBlockSection >
+                <apex:inputTextArea value="{! query}" html-placeholder="Enter Query..." rows="2" cols="80"/>
+                <div style="margin-right:50px;padding:25px">
+                <apex:commandButton value="Execute Query" action="{! execute}"  style="float:right;height:30px"/>
+                </div>
+            </apex:pageBlockSection>
+            
+        </apex:pageBlock>
+    </apex:form>
+    <apex:outputPanel id="resultPanel">
+      <c:QueryComponent query="{! query}" rendered="{! showQueryResultsArea}"/>
+    </apex:outputPanel>
+</apex:page>
