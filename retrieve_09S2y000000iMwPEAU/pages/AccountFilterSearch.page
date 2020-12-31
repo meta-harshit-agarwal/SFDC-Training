@@ -1,4 +1,4 @@
-<apex:page controller="AccountController" tabStyle="Account">
+<apex:page controller="AccountFilterSearchController" tabStyle="Account">
     <apex:form >
         <apex:pageblock title="Accounts Search" id="search-block">
             

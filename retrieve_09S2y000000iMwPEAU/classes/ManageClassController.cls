@@ -1,36 +1,44 @@
 public class ManageClassController 
 {
     public Id classId{get;set;}
-    public boolean render{get;set;}
-    public class__c selectedClass{get;set;}
+    public Boolean renderClassEditForm{get;set;}
+    public Class__c selectedClass{get;set;}
+    public List<Class__c> classRecordList = [SELECT Name, MaxSize__c, MyCount__c, Custom_Status__c FROM Class__c];
+
+    public void setSelectedClass(List<Class__c> classRecordList)
+    {
+        for(Class__c classIterator : classRecordList)
+        {
+            if(classIterator.Id == classId)
+                selectedClass = classIterator;
+        }
+
+    }
 
     public manageClassController() 
     {
-        render = false;
+        renderClassEditForm = false;
     }
  
-    public list<class__c> getClassRecList() 
+    public List<Class__c> getClassRecordList() 
     {
-        List<class__c> classRecList = [SELECT Name, MaxSize__c, MyCount__c, Custom_Status__c FROM class__c];
-        return classRecList;
+         return classRecordList;
     }
     
     public void editClass() 
     {
-        selectedClass = [SELECT Name, MaxSize__c, MyCount__c, Custom_Status__c FROM Class__c WHERE Id =: classId];
-        render = true;
+        renderClassEditForm = true;
     }
     
     public void updateClass() 
     {
         update selectedClass;
-        render = false;
+        renderClassEditForm = false;
     }
    
     public void deleteClass() 
     {
-        selectedClass = [SELECT Name, MaxSize__c, MyCount__c, Custom_Status__c FROM Class__c WHERE Id =: classId];
-        render = false;
+        renderClassEditForm = false;
         delete selectedClass;
     }
 }

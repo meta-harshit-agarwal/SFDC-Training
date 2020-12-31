@@ -1,27 +1,33 @@
-<apex:page controller="OpportunityController" docType="html-5.0">
-    <apex:form >
-    <apex:pageBlock >
-    	<apex:pageBlockTable value="{!contactList}" var="con">
-        	<apex:column value="{!con.Name}" />
-            <apex:column >
-                <input type = "radio" title = "SAVE"/>SAVE
-                <apex:actionSupport event="onclick" action="{! Save}" >
-                    <apex:param assignTo="{!contactId}" name="AccountId" value="{!con.Id}" />
-                </apex:actionSupport>
-            </apex:column>
-            <apex:column >
-                <input type = "radio" title = "Clear"/>Clear
-                <apex:actionSupport event="onclick" action="{! Clear}" >
-                    <apex:param assignTo="{!contactId}" name="AccountId" value="{!con.Id}" />
-                </apex:actionSupport>
-            </apex:column>
-            <apex:column >
-                <input type = "radio" title = "Cancel"/>Cancel
-                <apex:actionSupport event="onclick" action="{! Cancel}" >
-                    <apex:param assignTo="{!contactId}" name="AccountId" value="{!con.Id}" />
-                </apex:actionSupport>
-            </apex:column>
-        </apex:pageBlockTable>
-    </apex:pageBlock>
+<apex:page controller="BillToContactController" docType="html-5.0">
+    <script>
+    	function saveJS(){
+        	var listSize = {!size};
+            var selectedId;
+            for( i=0; i < listSize; i++){
+                if(document.getElementsByName("selectedRadio")[i].checked)
+                    selectedId=document.getElementsByName("selectedRadio")[i].value;
+                }
+           document.getElementById("{!$Component.form.hiddenInput12}").value= selectedId;
+           assignToController(selectedId);
+        }
+    </script>
+    <apex:form id="form" >
+        <apex:inputHidden value="{!contactId}" id="hiddenInput12"/>
+    	<apex:pageBlock >
+    		<apex:pageBlockTable value="{!contactList}" var="contact">
+        		<apex:column value="{!contact.Name}" />
+            	<apex:column >
+                	<input type="radio" value="{!contact.Id}" name="selectedRadio" />
+            	</apex:column>
+        	</apex:pageBlockTable>
+        	<apex:pageBlockButtons >
+        		<apex:commandButton value="save" onclick="saveJS();return false;" />
+            	<apex:commandButton value="clear" action="{!Clear}" />
+            	<apex:commandButton value="cancel" action="{!Cancel}" />
+        	</apex:pageBlockButtons>
+    	</apex:pageBlock>
+        <apex:actionFunction action="{!Save}" name="assignToController" >
+        	<apex:param value="" assignTo="{!contactId}" name="contactID"   />
+        </apex:actionFunction>
     </apex:form>
 </apex:page>

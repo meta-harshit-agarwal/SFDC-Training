@@ -1,4 +1,4 @@
-public class StudentController 
+public class StudentDetailsController 
 {
  
     public Id parentId{get;set;}
@@ -8,9 +8,8 @@ public class StudentController
     public StudentController( )
     {
         
-        //Id studentId = Apexpages.CurrentPage().getParameters().get('Id');
-        //System.debug(studentId);
-        myStudent = [SELECT Id, Class__c, Name, DOB__c, Class__r.Name, email__c FROM Student__c LIMIT 1 ];
+        Id studentId = Apexpages.CurrentPage().getParameters().get('Id');
+        myStudent = [SELECT Id, Class__c, Name, DOB__c, Class__r.Name, email__c FROM Student__c WHERE Id =: studentId LIMIT 1 ][0];
         parentId = myStudent.Id;
         pdfName = myStudent.Id;
        
@@ -41,6 +40,7 @@ public class StudentController
         
         if(attachments.size() > 0)
             delete attachments[0];
+
    		insert attach;
     }
 }

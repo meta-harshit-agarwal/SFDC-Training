@@ -1,39 +1,41 @@
-public class OpportunityController 
+public class BillToContactController
 {
     public Opportunity myOpportunity{get; set;}
     public List<Contact> contactList{get; set;}
     public Id contactId{set; get;}
     
-    public OpportunityController()
+    public  BillToContactController()
     {
    		Id opportunityId =  ApexPages.currentPage().getParameters().get('Id');
     	myOpportunity = [SELECT Id, Name, BillToContact__c, Manager__c FROM Opportunity WHERE Id =: opportunityId];     
-    	contactList = [SELECT Id, Name FROM Contact WHERE Account.Id =: myOpportunity.Manager__c];
+    	contactList = [SELECT Id, Name FROM Contact WHERE AccountId =: myOpportunity.Manager__c];
     }
     
-    public pageReference Save()
+    public pageReference save()
     {
-        System.debug(contactId);
         myOpportunity.BillToContact__c = contactId;
         update myOpportunity;
         PageReference pageRef = new PageReference('/' + myOpportunity.Id);
+
         return pageRef;
     }
-    public pageReference Clear()
+
+    public pageReference clear()
     {
-        System.debug(contactId);
         if(myOpportunity.BillToContact__c == contactId)
         {
             myOpportunity.BillToContact__c = null;
             update myOpportunity;
         } 
         PageReference pageRef = new PageReference('/' + myOpportunity.Id);
+
         return pageRef;
     }
-    public pageReference Cancel()
+
+    public pageReference cancel()
     {
-        System.debug(contactId);
         PageReference pageRef = new PageReference('/' + myOpportunity.Id);
+
         return pageRef;
     }
     

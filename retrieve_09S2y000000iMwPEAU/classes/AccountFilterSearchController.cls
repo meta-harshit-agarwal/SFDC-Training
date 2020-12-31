@@ -1,10 +1,9 @@
-public class AccountController 
+public class AccountFilterSearchController 
 {
-
     public Integer noOfRecords{get;set;} 
-    private String city{get;set;}
-    private String state{get;set;}
-    private String country{get;set;}
+    public String city{get;set;}
+    public String state{get;set;}
+    public String country{get;set;}
     public String query;
     public Integer resultSize{get;set;}
     
@@ -12,7 +11,7 @@ public class AccountController
     {
         noOfRecords = 10;
     }
-    
+    /*
     public String getCity()
     {
         return this.city ;
@@ -42,7 +41,7 @@ public class AccountController
     {
         this.country = country ;
     }
-    
+    */
     public ApexPages.StandardSetController setCon
     {
         get {
@@ -55,7 +54,6 @@ public class AccountController
         set;
     }
     
-    
     public void searchAccounts()
     {
         setCon = null;
@@ -67,14 +65,11 @@ public class AccountController
         if(!String.isBlank(city) || !String.isBlank(state) || !String.isBlank(country)) 
         {
             query += 'WHERE' ;
-            query += String.isBlank(city)?'':' BillingCity LIKE '+'\'%'+city+'%\''+' AND ';
-            query += String.isBlank(state)?'':' BillingState LIKE '+'\'%'+state+'%\''+' AND ';
-            query += String.isBlank(country)?'':' BillingCountry LIKE '+'\'%'+country+'%\'';
+            query += String.isBlank(city) ? '' : ' BillingCity LIKE ' + '\'%' + city + '%\'' + ' AND ';
+            query += String.isBlank(state) ? '' : ' BillingState LIKE ' + '\'%' + state + '%\'' + ' AND ';
+            query += String.isBlank(country) ? '' : ' BillingCountry LIKE ' + '\'%' + country + '%\'';
         }
-        if(query.endsWith('AND ')) 
-        {
-            query = query.substring(0, query.length() - 5);
-        }
+        query.removeEnd('AND ');
         city = null;
         state = null;
         country = null;
