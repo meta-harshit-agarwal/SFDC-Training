@@ -1,0 +1,52 @@
+<apex:page standardController="Student__c" recordSetVar="studentDetails" extensions="DeleteStudentController" showHeader="false" >
+    <script src="/soap/ajax/45.0/connection.js"></script> 
+    <script> 
+        function continueDelete(ids) 
+    	{ 
+        	sforce.connection.sessionId = '{!$Api.Session_ID}'; 
+        	var objstd = new sforce.SObject("student__c"); 
+        	var array = new Array(); 
+        	var res = ids.substring(1,ids.lastIndexOf(']')); 
+        	var array = res.split(', '); 
+        	for(var i = 0; i < array.length; i++) 
+            { 
+                objstd.id = array[i]; 
+                sforce.connection.deleteIds([objstd.id], {onSuccess : success, onFailure : failed}); 
+                
+                function success(result) 
+                { 
+                    if (result[0].getBoolean("success")) 
+                    { 
+                        console.log("student deleted with id " + result[0].id);
+                    } 
+                    else 
+                    { 
+                        console.log("failed to delete student " + result[0]); 
+                    } 
+                } 
+                
+                function failed(error) 
+                { 
+                    console.log("An error has occurred " + error); 
+                } 
+            }
+    	} 
+    </script> 
+    	<apex:form > 
+            <apex:pageMessages ></apex:pageMessages> 
+            <apex:pageBlock > 
+                <apex:pageBlockSection collapsible="false" title="Students Names To be Deleted:" rendered="{! toRenderStudentsName}"> 
+                    <apex:pageBlockTable value="{!selected}" var="students"> 
+                        <apex:column value="{!students.name}"/> 
+                    </apex:pageBlockTable> 
+                </apex:pageBlockSection> 
+                <apex:pageBlockButtons location="bottom" rendered="{!isEmpty}"> 
+                    <apex:commandButton value="Go Back" action="{!Cancel}"/> 
+                </apex:pageBlockButtons> 
+                <apex:pageBlockButtons location="bottom" rendered="{!isNotEmpty}"> 
+                    <apex:commandButton value="Cancel" action="{!Cancel}"/> 
+                    <apex:commandButton value="Continue" onClick="continueDelete('{!listOfIds}');" action="{!Cancel}" /> 
+                </apex:pageBlockButtons> 
+            </apex:pageBlock> 
+    	</apex:form> 
+</apex:page>

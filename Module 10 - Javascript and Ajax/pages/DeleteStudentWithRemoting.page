@@ -1,0 +1,42 @@
+<apex:page standardController="Student__c" recordSetVar="studentDetails" extensions="DeleteStudentWithRemotingController" showHeader="false" >
+    <script>
+    function remoteDelete() 
+    {
+        Visualforce.remoting.Manager.invokeAction(
+            									'{!$RemoteAction.DeleteStudentWithRemotingController.deleteStudents}',
+            									'{! listofStudents}',
+            									handleResult
+        										 );
+    }
+  
+    function handleResult(result, event)
+    {
+    	if(event.status)
+    	{
+    		alert("Student Deleted.");
+    	}
+    	else
+    	{
+    		alert("Students not Deleted");
+    	}
+    }
+    </script>
+    <apex:form >
+        <apex:pageMessages id="mssgId" ></apex:pageMessages>
+        <apex:pageBlock >
+            <apex:pageBlockSection collapsible="false" title="Students Names To be Deleted:" rendered="{! toRenderStudentsName}">
+            <apex:pageBlockTable value="{!selected}" var="students">
+                <apex:column value="{!students.name}"/>
+            </apex:pageBlockTable>
+                </apex:pageBlockSection>
+            <apex:pageBlockButtons location="bottom" rendered="{!isEmpty}">
+                <apex:commandButton value="Go Back" action="{!Cancel}"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockButtons location="bottom" rendered="{!isNotEmpty}">
+                <apex:commandButton value="Cancel" action="{!Cancel}"/>
+                <apex:commandButton value="Continue" onClick="remoteDelete();" action="{!Cancel}" />
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+        
+    </apex:form>
+</apex:page>
