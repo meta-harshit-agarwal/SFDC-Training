@@ -12,18 +12,6 @@ public class QueryExecuterController
     
     public void execute()
     {
-        if(!String.isBlank(query))
-        {
-            this.showQueryResultsArea = true;
-        }
-        
-        else
-        {
-            this.showQueryResultsArea = false;
-            final String errorMessage = 'Please Enter query';
-            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, errorMessage));
-        }
+        this.showQueryResultsArea = true;      
     }
-
-
 }

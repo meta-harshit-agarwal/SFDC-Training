@@ -15,7 +15,7 @@ public class QueryComponentController
             if(setCon == null)
             {
                 List<sObject> listOfDisplayingObjects = new List<sObject>();
-                listOfDisplayingObjects = getDisplayFields(queryToBeExecuted);
+                listOfDisplayingObjects = getDisplayObjects(queryToBeExecuted);
                 if(listOfDisplayingObjects != null)
                 {
                     setCon = new ApexPages.StandardSetController(listOfDisplayingObjects);
@@ -39,6 +39,17 @@ public class QueryComponentController
         return this.queryToBeExecuted;
     }
     
+    public void setFieldList(List<sObject> records)
+    {
+        Set<String> fieldsSet = new Set<String>();
+        for(sObject record : records)
+        {
+            fieldsSet.addAll(record.getPopulatedFieldsAsMap().keySet());
+        }
+        this.fieldsList = new List<String>();
+        this.fieldsList.addAll(fieldsSet);
+
+    }
     public void setQueryToBeExecuted(String query)
     {
         if(!this.queryToBeExecuted.equalsIgnoreCase(query))
@@ -67,18 +78,10 @@ public class QueryComponentController
     
 	public List<sObject> getRecordsList()
     {
-        if(setCon != null)
-        {
-            return setCon.getRecords();
-        }
-        
-        else
-        {
-            return null;
-        }
+        return setCon.getRecords();
     }
     
-    private String createQuery(String query)
+    private String applyOrderBy(String query)
     {
         String orderedQuery = query;        
         if(isSortingLinkClicked && String.isNotBlank(this.getSortBy()))
@@ -107,7 +110,7 @@ public class QueryComponentController
     
     private List<sObject> executeQuery(String query)
     {
-        String orderedQuery = createQuery(query);
+        String orderedQuery = applyOrderBy(query);
         List<sObject> sObjectList = new List<sObject>();
         try
         {
@@ -124,9 +127,10 @@ public class QueryComponentController
         return sObjectList;
     }
     
-    public List<sObject> getDisplayFields(String query)
+    public List<sObject> getDisplayObjects(String query)
     {
         List<sObject> records = executeQuery(query);
+       
         if(records == null)
         {
             return null;
@@ -134,24 +138,7 @@ public class QueryComponentController
         
         else
         {
-            if(records.isEmpty())
-            {
-                final String msg = 'No records found';
-                ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.INFO, msg));
-                records = new List<Account>();
-            }
-            
-            else
-            {
-                Set<String> fieldsSet = new Set<String>();
-                for(sObject record : records)
-                {
-                    fieldsSet.addAll(record.getPopulatedFieldsAsMap().keySet());
-                }
-                this.fieldsList = new List<String>();
-                this.fieldsList.addAll(fieldsSet);
-            }
-            
+            setFieldList(records);
             return records; 
         }
     }  
