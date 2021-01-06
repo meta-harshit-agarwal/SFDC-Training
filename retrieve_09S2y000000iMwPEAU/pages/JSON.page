@@ -1,0 +1,40 @@
+<apex:page controller="JSONController" >
+    <bodd>
+    	<apex:form >
+        	<apex:pageBlock >
+                <apex:pageBlockSection title="Account"  >
+            		<apex:inputField value="{!myAccount.Name}"/>
+               		<apex:inputField value="{!myAccount.AnnualRevenue}"/>
+                	<apex:inputField value="{!myAccount.BillingCity}"/>
+                    <apex:inputField value="{!myAccount.ShippingCity}"/>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+            
+            <apex:pageBlock >
+                <apex:pageBlockSection title="Contact 1">
+            		<apex:inputField value="{!myContact1.FirstName}"/>
+               		<apex:inputField value="{!myContact1.LastName}"/>
+                	<apex:inputField value="{!myContact1.Email}"/>
+                    <apex:inputField value="{!myContact1.BirthDate}"/>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+            
+            <apex:pageBlock >
+                <apex:pageBlockSection title="Contact 2">
+            		<apex:inputField value="{!myContact2.FirstName}"/>
+               		<apex:inputField value="{!myContact2.LastName}"/>
+                	<apex:inputField value="{!myContact2.Email}"/>
+                    <apex:inputField value="{!myContact2.BirthDate}"/>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+            
+            <apex:commandButton value="Genrate JSON String" action="{!generate}"  />
+            
+            <apex:pageBlock rendered="{!jsonBool}" >
+                <apex:pageBlockSection >
+                    value: {!jsonString}
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:form>
+    </bodd>
+</apex:page>

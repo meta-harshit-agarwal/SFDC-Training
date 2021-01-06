@@ -1,0 +1,20 @@
+<apex:page standardController="Class__c">
+    <head>
+        <meta charset = "utf-8"/>
+        <meta name = "viewport" content = "width = device - width inital- scale = 1"/>
+    </head>
+    <body>
+        <apex:form >
+        	<apex:pageBlock title="Class">
+        		<apex:pageBlockSection columns="1" >
+            		<apex:inputField value="{!Class__c.Name}" />
+                    <apex:inputField value="{!Class__c.Board__c}" />
+                    <apex:inputField value="{!Class__c.MaxSize__c}" />
+                    <apex:inputField value="{!Class__c.Fee__c}" />
+                	<apex:commandButton action="{! save}" value="save"  />
+            	</apex:pageBlockSection>
+        
+        </apex:pageBlock>
+        </apex:form>
+    </body>
+</apex:page>

@@ -1,0 +1,11 @@
+<apex:page controller="StudentController" showHeader="false" sidebar="false" renderAs="PDF"  action="{!savePdf}"  >
+    <apex:form >
+    	<apex:pageBlock >
+        	<h1 style = "text-align:center"> Student Details</h1>
+    	    Name : <apex:outputField value="{!myStudent.Name}" /><br/>
+            DOB : <apex:outputField value="{!myStudent.DOB__c}" /><br/>
+            Class : <apex:outputField value="{!myStudent.Class__r.Name}" /><br/>
+            Email : <apex:outputField value="{!myStudent.email__c}" /><br/>
+    	</apex:pageBlock>
+    </apex:form>
+</apex:page>

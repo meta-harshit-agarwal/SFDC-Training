@@ -1,0 +1,40 @@
+<apex:page Controller="ManageClassController">
+    <apex:form >
+        <apex:pageBlock id="classRecordList" title="Class Record List">
+                <apex:pageBlockTable value="{!classRecordList}" var="myClass">
+                    
+                    <apex:column headerValue="Edit">
+                        <apex:commandLink action="{!editClass}" value="Edit" reRender="classEditForm">
+                            <apex:param name="classId" assignTo="{!classId}" value="{!myClass.Id}" />
+                        </apex:commandLink>
+                    </apex:column>
+                    
+                    <apex:column headerValue="Delete">
+                        <apex:commandLink action="{!deleteClass}" value="Delete" reRender="classRecordList, classEditForm ">
+                            <apex:param name="classId" assignTo="{!classId}" value="{!myClass.Id}"/>
+                        </apex:commandLink>
+                    </apex:column>
+                    
+                    <apex:column value="{!myClass.name}" headerValue="Class Name"/>
+                    <apex:column value="{!myClass.MaxSize__c}" />
+                    <apex:column value="{!myClass.MyCount__c}" />
+                    <apex:column value="{!myClass.Custom_Status__c}" />
+                    
+                </apex:pageBlockTable>
+        </apex:pageBlock>
+        
+        <apex:pageBlock id="classEditForm" title="Edit Class Details">
+            
+            <apex:pageBlockSection rendered="{!renderClassEditForm}" columns="1">
+                <apex:inputField value="{!selectedClass.name}"/>
+                <apex:inputField value="{!selectedClass.MaxSize__c}"/>
+                <apex:inputField value="{!selectedClass.MyCount__c}"/>
+                <apex:inputField value="{!selectedClass.Custom_Status__c}"/>
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockButtons location="bottom" rendered="{! renderClassEditForm}">
+                <apex:commandButton value="Save" action="{!updateClass}"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

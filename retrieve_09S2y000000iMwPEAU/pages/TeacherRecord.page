@@ -1,0 +1,21 @@
+<apex:page standardController="Contact"   >
+    <style type="text/CSS" >
+    h1{
+        text-align:center;
+        line-height:40px;
+        background: #074894;
+        display:block;
+        height:40px;
+        color:#fff;
+        font-size:20px
+        }
+    </style>
+	<apex:pageBlock rendered="{!Contact.RecordTypeId == 'PGT'}">
+    	<h1> PGT Teacher</h1>
+    </apex:pageBlock>
+    <apex:pageBlock rendered="{!Contact.RecordTypeId == 'TGT'}">
+    	<h1> TGT Teacher</h1>
+    </apex:pageBlock>
+
+
+</apex:page>
